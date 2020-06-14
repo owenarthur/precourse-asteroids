@@ -15,6 +15,7 @@ const SHIP_TURN_SPEED = 360;
 
 var spaceColor = 'black';
 var shipColor = 'white';
+var laserColor = 'white';
 var asteroidColor = 'gray';
 
 var asteroids = [];
@@ -33,18 +34,18 @@ var level = {
 }
 
 var ship = {
-  x : canvas.width / 2,
-  y : canvas.height / 2,
-  r : 20 / 2,
-  size : 20,
-  angle : 90 / 180 * Math.PI,
-  rotation: 0,
-  thrusting: false,
-  brakes: false,
+  x : canvas.width / 2, // starting x locaiton //
+  y : canvas.height / 2, // starting y location //
+  size : 20, // arbitrary size //
+  r : 20 / 2, // easy variable for half the size //
+  angle : 90 / 180 * Math.PI, // tracks angle //
+  rotation: 0, // tracks rotation //
+  thrusting: false, // if up key is pressed //
+  brakes: false, // if down key is pressed //
   thrust : {
     x : 0,
     y: 0,
-  },
+  }, // controls movement //
 }
 
 var thrusters = {
@@ -52,7 +53,7 @@ var thrusters = {
   g : 200,
   b : 200,
   a : 0,
-}
+} // manages slight red of the thrusters //
 
 
 // establishing keys (space and arrow keys) //
@@ -214,13 +215,44 @@ function drawThrusters() {
 
 function fireLaser() {
   // push to laser array objects with necessary data: starting x, starting y, x speed, y speed, maybe distance traveled? //
+  lasers.push({
+    x : ship.x + 1.3 * ship.r * Math.cos(ship.angle),
+    y : ship.y - 1.3 * ship.r * Math.sin(ship.angle),
+    xv : 500 * Math.cos(ship.angle) / FPS,
+    yv : -500 * Math.sin(ship.angle) / FPS,
+    distance: 0,
+  })
 }
 
 function drawLasers() {
-  // for each laser in the array, draw it at its x and y position //
-    //manage edge of canvas cases//
-  // update x and y, and increase its distance variable //
-  // if traveled max distance, splice it out of the array //
+  lasers.forEach((currentLaser) => {
+    // for each laser in the array, draw it at its x and y position //
+    ctx.fillStyle = laserColor;
+    ctx.beginPath();
+    ctx.arc(currentLaser.x, currentLaser.y, ship.size / 15, 0, Math.PI * 2, false);
+    ctx.fill();
+    // update x and y //
+    currentLaser.x += currentLaser.xv;
+    currentLaser.y += currentLaser.yv;
+    // updates distance and dissolves laser //
+    currentLaser.distance += 1;
+    if (currentLaser.distance > 65) {
+      lasers.splice(currentLaser, 1)
+    }
+    // handles edge of canvas //
+    if (currentLaser.x > canvas.width) {
+      currentLaser.x -= canvas.width;
+    }
+    if (currentLaser.x < 0) {
+      currentLaser.x += canvas.width;
+    }
+    if (currentLaser.y > canvas.height) {
+      currentLaser.y -= canvas.height;
+    }
+    if (currentLaser.y < 0) {
+      currentLaser.y += canvas.height;
+    }
+  })
 }
 
 // asteroids //
@@ -260,6 +292,7 @@ function draw() {
   moveShip();
   drawShip();
   drawThrusters();
+  drawLasers();
 
 }
 
