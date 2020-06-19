@@ -33,6 +33,7 @@ var gameStart = true;
 var gamePlaying = false;
 var gamePaused = false;
 var gameOver = false;
+var newGame = false;
 
 var spaceColor = 'black';
 var shipColor = 'white';
@@ -427,6 +428,7 @@ function loseALife() {
   lives --;
   if (lives === 0) {
     gameOver = true;
+    newGame = true;
   }
   resetShipPosition();
 }
@@ -494,6 +496,19 @@ function endGame () {
   ctx.fillText('game over', 400, 350)
   ctx.font = `24px "${FONT_NAME}"`;
   ctx.fillText('space to relaunch', 400, 450);
+  resetStats();
+}
+
+function resetStats() {
+  score = 0;
+  lives = 3;
+  level = 1;
+  AsteroidCount = level + 2;
+  resetShipPosition();
+  asteroids = [];
+  lasers = [];
+  buildAsteroids(10, 10, AsteroidCount, FIRST_ASTEROID_SIZE);
+  newGame = !newGame;
 }
 
 
@@ -528,10 +543,17 @@ function loop() {
     pauseGame();
   }
   if (gamePlaying) {
+    if (newGame) {
+      resetStats();
+    }
     draw();
   }
   if (gameOver) {
     endGame();
   }
 }
-setInterval(loop, 1000 / FPS);
+function call() {
+  setInterval(loop, 1000 / FPS);
+}
+
+ call();
