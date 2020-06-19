@@ -3,7 +3,11 @@
 var canvas = document.getElementById("asteroidscanvas");
 var ctx = canvas.getContext("2d");
 
+document.fonts.load('10pt "Press Start 2P"').then(startGame);
+
 // establishing constants (stashing them up here for easy modification) //
+
+const FONT_NAME = 'Press Start 2P';
 
 const FPS = 60;
 const FRICTION = .5;
@@ -18,6 +22,18 @@ const THIRD_ASTEROID_SIZE = 75;
 
 // establishing global variables //
 
+// var gameStates = {
+//   start : true,
+//   playing : false,
+//   paused : false,
+//   over : true,
+// }
+
+var gameStart = true;
+var gamePlaying = false;
+var gamePaused = false;
+var gameOver = false;
+
 var spaceColor = 'black';
 var shipColor = 'white';
 var laserColor = 'white';
@@ -26,7 +42,6 @@ var asteroidColor = 'gray';
 var score = 0;
 var lives = 3;
 var level = 1;
-var gameOver = false;
 var AsteroidCount = level + 2;
 
 var asteroids = [];
@@ -64,6 +79,14 @@ function keyDown(/** @type {KeyboardEvent} */ ev) {
   switch(ev.keyCode) {
     case 32:
       fireLaser();
+      if (gameStart) {
+        gameStart = !gameStart;
+        gamePlaying = !gamePlaying;
+      }
+      if (gameOver) {
+        gameOver = !gameOver;
+        gamePlaying = !gamePlaying;
+      }
       break;
     case 37:
       ship.rotation = SHIP_TURN_SPEED / 180 * Math.PI / FPS;
@@ -76,6 +99,10 @@ function keyDown(/** @type {KeyboardEvent} */ ev) {
       break;
     case 40:
       ship.brakes = true;
+      break;
+    case 80:
+      gamePlaying = !gamePlaying;
+      gamePaused = !gamePaused;
       break;
   }
 }
@@ -107,10 +134,10 @@ function drawSpace() {
 
 // draws score and lives //
 function drawScoreAndLives() {
-  ctx.font = '12pt Courier';
   ctx.fillStyle = 'white'
-  ctx.fillText('score: ' + score.pad(7), 25, 25)
-  ctx.fillText('lives: ' + lives, 700, 25)
+  ctx.font = `12px "${FONT_NAME}"`
+  ctx.fillText('score: ' + score.pad(7), 100, 25)
+  ctx.fillText('lives: ' + lives, 725, 25)
 }
 
 // move the ship around the canvas //
@@ -413,15 +440,6 @@ function levelUp () {
   buildAsteroids(0, 0, AsteroidCount, FIRST_ASTEROID_SIZE)
 }
 
-// ends the game //
-function endGame () {
-  ctx.fillStyle = spaceColor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.font = '40pt Courier';
-  ctx.fillStyle = 'white'
-  ctx.fillText('game over', 250, 300)
-}
-
 // utility functions //
 
 // pads a number with set number of zeros //
@@ -435,6 +453,49 @@ Number.prototype.pad = function(size) {
 function distanceBetweenPoints(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
+
+// game states //
+
+function startGame() {
+  ctx.fillStyle = spaceColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = `36px "${FONT_NAME}"`;
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.fillText('welcome to asteroids', 400, 300);
+  ctx.font = `24px "${FONT_NAME}"`
+  ctx.fillText('arrows to move', 400, 400);
+  ctx.fillText('space to fire', 400, 450);
+  setInterval(function() {
+    ctx.fillStyle = spaceColor;
+  }, 50)
+  ctx.fillText('p to pause space to start', 400, 500)
+}
+
+function pauseGame() {
+  if (gamePaused) {
+    ctx.font = `48px "${FONT_NAME}"`;
+    ctx.fillStyle = 'white'
+    ctx.fillText('paused', 400, 350)
+  }
+  if (!gamePaused) {
+    gamePlaying = true;
+    loop();
+  }
+}
+
+// ends the game //
+function endGame () {
+  gamePlaying = false;
+  ctx.fillStyle = spaceColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = `48px "${FONT_NAME}"`;
+  ctx.fillStyle = 'white'
+  ctx.fillText('game over', 400, 350)
+  ctx.font = `24px "${FONT_NAME}"`;
+  ctx.fillText('space to relaunch', 400, 450);
+}
+
 
 buildAsteroids(10, 10, AsteroidCount, FIRST_ASTEROID_SIZE);
 
@@ -459,4 +520,18 @@ function draw() {
 }
 
 // calls the draw function//
-setInterval(draw, 1000 / FPS);
+function loop() {
+  if (gameStart) {
+    startGame();
+  }
+  if (gamePaused) {
+    pauseGame();
+  }
+  if (gamePlaying) {
+    draw();
+  }
+  if (gameOver) {
+    endGame();
+  }
+}
+setInterval(loop, 1000 / FPS);
