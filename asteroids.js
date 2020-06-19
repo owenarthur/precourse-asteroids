@@ -11,12 +11,23 @@ const FRICTION = .5;
 const SHIP_ACCELERATION = 5;
 const SHIP_TURN_SPEED = 360;
 
+const ASTEROID_TURN_SPEED = 10;
+const FIRST_ASTEROID_SIZE = 175;
+const SECOND_ASTEROID_SIZE = 125;
+const THIRD_ASTEROID_SIZE = 75;
+
 // establishing global variables //
 
 var spaceColor = 'black';
 var shipColor = 'white';
 var laserColor = 'white';
 var asteroidColor = 'gray';
+
+var score = 0;
+var lives = 3;
+var level = 1;
+var gameOver = false;
+var AsteroidCount = 3;
 
 var asteroids = [];
 var lasers = [];
@@ -104,6 +115,15 @@ function keyUp(/** @type {KeyboardEvent} */ ev) {
 function drawSpace() {
   ctx.fillStyle = spaceColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+
+
+function drawScoreAndLives() {
+  ctx.font = '12pt Courier';
+  ctx.fillStyle = 'white'
+  ctx.fillText('score: ' + score.pad(7), 25, 25)
+  ctx.fillText('lives: ' + lives, 700, 25)
 }
 
 // move the ship around the canvas //
@@ -257,45 +277,193 @@ function drawLasers() {
 
 // asteroids //
 
-function buildAsteroid() {
-  // can we randomly generate their shapes, or should we draw five or six and select randomly from them? //
-  // push to asteroids array objects with necessary data: starting x, starting y (not too close to ship?), x speed, y speed, direction //
+function buildAsteroids(x, y, count, size) {
+  for (let i = 0; i < count; i++) {
+    if (size === FIRST_ASTEROID_SIZE) {
+      do {
+        x = Math.floor(Math.random() * canvas.width);
+        y = Math.floor(Math.random() * canvas.height);
+      } while (distanceBetweenPoints(ship.x, ship.y, x, y) < 100);
+    }
+    let randomizedTurnSpeedMultiplier = Math.random() < 0.5 ? -1 : 1;
+    let randomizedTurnSpeed = randomizedTurnSpeedMultiplier * Math.floor(Math.random() * (10 - 1) + 1)
+    asteroids.push({
+      x : x,
+      y : y,
+      xv: Math.random() * 75 / FPS * (Math.random() < 0.5 ? 1 : -1),
+      yv: Math.random() * 75 / FPS * (Math.random() < 0.5 ? 1 : -1),
+      size: size,
+      r : size / 2.5,
+      angle: Math.PI / 2,
+      rotation : ASTEROID_TURN_SPEED / 180 * Math.PI / FPS,
+      anglev: 1,
+    })
+  }
+}
+
+function moveAsteroids() {
+  for (let i = 0; i < asteroids.length; i++) {
+    asteroids[i].x += asteroids[i].xv;
+    asteroids[i].y += asteroids[i].yv;
+    asteroids[i].angle += asteroids[i].rotation;
+
+    if (asteroids[i].x > canvas.width) {
+      asteroids[i].x -= canvas.width;
+    }
+    if (asteroids[i].x < 0) {
+      asteroids[i].x += canvas.width;
+    }
+    if (asteroids[i].y > canvas.height) {
+      asteroids[i].y -= canvas.height;
+    }
+    if (asteroids[i].y < 0) {
+      asteroids[i].y += canvas.height;
+    }
+  }
 }
 
 function drawAsteroids() {
+  ctx.strokeStyle = asteroidColor;
+  ctx.lineWidth = ship.size / 15;
+  for (let i = 0; i < asteroids.length; i++) {
+    ctx.beginPath();
+    ctx.moveTo(
+      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle),
+      asteroids[i].y - asteroids[i].r * Math.sin(asteroids[i].angle)
+    );
+    ctx.lineTo( // rear left //
+      asteroids[i].x + asteroids[i].r * Math.sin(asteroids[i].angle),
+      asteroids[i].y + asteroids[i].r * Math.cos(asteroids[i].angle)
+    );
+    ctx.lineTo( // rear left //
+      asteroids[i].x - asteroids[i].r * Math.cos(asteroids[i].angle),
+      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle)
+    );
+    ctx.lineTo( // rear left //
+      asteroids[i].x - asteroids[i].r * Math.sin(asteroids[i].angle),
+      asteroids[i].y - asteroids[i].r * Math.cos(asteroids[i].angle)
+    );
+    ctx.closePath();
+    ctx.stroke();
+  }
   // for each asteroid in the asteroids array, draw it //
   // update its position //
     // manage edge cases //
 }
 
+function detonateAsteroid(x, y) {
+  buildAsteroids(x, y, 2, SECOND_ASTEROID_SIZE)
+}
+
+function doubleDetonateAsteroid(x, y) {
+  buildAsteroids(x, y, 2, THIRD_ASTEROID_SIZE)
+}
+
 function detectAsteroidCollision() {
+  for (let i = 0; i < lasers.length; i++) {
+    for (let j = 0; j < asteroids.length; j++) {
+      if (distanceBetweenPoints(lasers[i].x, lasers[i].y, asteroids[j].x, asteroids[j].y) < asteroids[j].r) {
+        if (asteroids[j].size === FIRST_ASTEROID_SIZE) {
+          score += 10;
+          detonateAsteroid(asteroids[j].x, asteroids[j].y);
+        }
+        if (asteroids[j].size === SECOND_ASTEROID_SIZE) {
+          score += 25;
+          doubleDetonateAsteroid(asteroids[j].x, asteroids[j].y);
+        }
+        if (asteroids[j].size === THIRD_ASTEROID_SIZE) {
+          score += 50;
+        }
+        asteroids.splice(j, 1);
+        lasers.splice(i, 1);
+      }
+    }
+  }
   // check if laser coordinates are within any asteroid coordinates //
   // render two smaller asteroids, maybe build asteroid takes in a size variable? //
 }
 
 function detectShipCollision() {
+  for (let i = 0; i < asteroids.length; i++) {
+    if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.r + asteroids[i].r) {
+      loseALife();
+    }
+  }
   // check if ship coordinates are within any asteroid coordinates //
   // draw the explosion of the ship //
 }
 
-function gameOver () {
-  //end of game screen
+function resetShipPosition() {
+  ship.x = canvas.width / 2;
+  ship.y = canvas.height / 2;
+  ship.angle = 90 / 180 * Math.PI;
+  ship.rotation = 0;
+  ship.thrusting = false;
+  ship.brakes = false;
+  ship.thrust.x = 0;
+  ship.thrust.y = 0;
+}
+
+function loseALife() {
+  lives --;
+  if (lives === 0) {
+    gameOver = true;
+  }
+  resetShipPosition();
 }
 
 function levelUp () {
-  // when asteroids array is empty, return ship to middle of screen, re-draw asteroids //
+  level++;
+  score += 500;
+  resetShipPosition();
+  AsteroidCount++;
+  buildAsteroids(0, 0, AsteroidCount, FIRST_ASTEROID_SIZE)
 }
+
+// ends the game //
+function endGame () {
+  ctx.fillStyle = spaceColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = '40pt Courier';
+  ctx.fillStyle = 'white'
+  ctx.fillText('game over', 250, 300)
+}
+
+// utility functions //
+
+// pads a number with set number of zeros //
+Number.prototype.pad = function(size) {
+  let s = String(this);
+  while (s.length < (size || 10)) {s = "0" + s;}
+  return s;
+};
+
+// calculates distance between points //
+function distanceBetweenPoints(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+buildAsteroids(10, 10, AsteroidCount, FIRST_ASTEROID_SIZE);
 
 // the central draw function //
 function draw() {
+  if (asteroids.length === 0) {
+    levelUp();
+  }
   drawSpace();
+  drawScoreAndLives();
   moveShip();
   drawShip();
   drawThrusters();
   drawLasers();
-
+  moveAsteroids();
+  drawAsteroids();
+  detectShipCollision();
+  detectAsteroidCollision();
+  if (gameOver) {
+    endGame();
+  }
 }
 
 // calls the draw function//
 setInterval(draw, 1000 / FPS);
-
