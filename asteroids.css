@@ -1,5 +1,9 @@
-
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("PressStart2P-Regular.ttf");
+}
 body {
+  font-family: 'Press Start 2P';
   background-color: rgba(129, 120, 120, 0.5);
   justify-content: center;
 }
