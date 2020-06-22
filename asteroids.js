@@ -5,6 +5,10 @@ var ctx = canvas.getContext("2d");
 
 document.fonts.load('10pt "Press Start 2P"').then(startGame);
 
+
+// audio elements //
+var thrusterAudio = document.getElementById("thruster");
+
 // establishing constants (stashing them up here for easy modification) //
 
 const FONT_NAME = 'Press Start 2P';
@@ -94,6 +98,7 @@ function keyDown(/** @type {KeyboardEvent} */ ev) {
       break;
     case 38:
       ship.thrusting = true;
+      thrusterAudio.play();
       break;
     case 39:
       ship.rotation = -SHIP_TURN_SPEED / 180 * Math.PI / FPS;
@@ -115,6 +120,7 @@ function keyUp(/** @type {KeyboardEvent} */ ev) {
       break;
     case 38:
       ship.thrusting = false;
+      setTimeout(resetThrusterAudio, 175);
       break;
     case 39:
       ship.rotation = 0;
@@ -246,6 +252,15 @@ function drawThrusters() {
     ctx.stroke();
 }
 
+// toggles thruster audio
+
+function resetThrusterAudio() {
+    thrusterAudio.pause();
+    thrusterAudio.currentTime = 0;
+}
+
+
+
 // draws the lasers //
 
 function fireLaser() {
@@ -257,6 +272,8 @@ function fireLaser() {
     yv : -500 * Math.sin(ship.angle) / FPS,
     distance: 0,
   })
+  var pew = new Audio('assets/pew.m4a');
+  pew.play();
 }
 
 function drawLasers() {
@@ -275,17 +292,8 @@ function drawLasers() {
       lasers.splice(currentLaser, 1)
     }
     // handles edge of canvas //
-    if (currentLaser.x > canvas.width) {
-      currentLaser.x -= canvas.width;
-    }
-    if (currentLaser.x < 0) {
-      currentLaser.x += canvas.width;
-    }
-    if (currentLaser.y > canvas.height) {
-      currentLaser.y -= canvas.height;
-    }
-    if (currentLaser.y < 0) {
-      currentLaser.y += canvas.height;
+    if (currentLaser.x > canvas.width || currentLaser.y > canvas.height) {
+      lasers.splice(currentLaser, 1);
     }
   })
 }
