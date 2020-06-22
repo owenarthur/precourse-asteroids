@@ -292,8 +292,17 @@ function drawLasers() {
       lasers.splice(currentLaser, 1)
     }
     // handles edge of canvas //
-    if (currentLaser.x > canvas.width || currentLaser.y > canvas.height) {
-      lasers.splice(currentLaser, 1);
+    if (currentLaser.x > canvas.width) {
+      currentLaser.x -= canvas.width;
+    }
+    if (currentLaser.x < 0) {
+      currentLaser.x += canvas.width;
+    }
+    if (currentLaser.y > canvas.height) {
+      currentLaser.y -= canvas.height;
+    }
+    if (currentLaser.y < 0) {
+      currentLaser.y += canvas.height;
     }
   })
 }
