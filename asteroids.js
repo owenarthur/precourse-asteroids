@@ -5,6 +5,10 @@ var ctx = canvas.getContext("2d");
 
 document.fonts.load('10pt "Press Start 2P"').then(startGame);
 
+
+// audio elements //
+var pew = document.getElementById("pew");
+
 // establishing constants (stashing them up here for easy modification) //
 
 const FONT_NAME = 'Press Start 2P';
@@ -257,6 +261,8 @@ function fireLaser() {
     yv : -500 * Math.sin(ship.angle) / FPS,
     distance: 0,
   })
+  var pew = new Audio('assets/pew.m4a');
+  pew.play();
 }
 
 function drawLasers() {
