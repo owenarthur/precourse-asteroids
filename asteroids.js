@@ -7,7 +7,7 @@ document.fonts.load('10pt "Press Start 2P"').then(startGame);
 
 
 // audio elements //
-var pew = document.getElementById("pew");
+var thrusterAudio = document.getElementById("thruster");
 
 // establishing constants (stashing them up here for easy modification) //
 
@@ -98,6 +98,7 @@ function keyDown(/** @type {KeyboardEvent} */ ev) {
       break;
     case 38:
       ship.thrusting = true;
+      thrusterAudio.play();
       break;
     case 39:
       ship.rotation = -SHIP_TURN_SPEED / 180 * Math.PI / FPS;
@@ -119,6 +120,7 @@ function keyUp(/** @type {KeyboardEvent} */ ev) {
       break;
     case 38:
       ship.thrusting = false;
+      setTimeout(resetThrusterAudio, 175);
       break;
     case 39:
       ship.rotation = 0;
@@ -249,6 +251,15 @@ function drawThrusters() {
     // ctx.closePath();
     ctx.stroke();
 }
+
+// toggles thruster audio
+
+function resetThrusterAudio() {
+    thrusterAudio.pause();
+    thrusterAudio.currentTime = 0;
+}
+
+
 
 // draws the lasers //
 
