@@ -357,44 +357,44 @@ function drawAsteroids() {
   for (let i = 0; i < asteroids.length; i++) {
     ctx.beginPath();
     ctx.moveTo(
-      asteroids[i].x,
-      asteroids[i].y + asteroids[i].r
+      asteroids[i].x + asteroids[i].r * Math.random(),
+      asteroids[i].y + asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r / 2,
-      asteroids[i].y + asteroids[i].r / 2
+      asteroids[i].x + asteroids[i].r * Math.random(),
+      asteroids[i].y + asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r,
-      asteroids[i].y + asteroids[i].r / 4
+      asteroids[i].x + asteroids[i].r * Math.random(),
+      asteroids[i].y + asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r / 2 ,
-      asteroids[i].y - asteroids[i].r / 4
+      asteroids[i].x + asteroids[i].r * Math.random(),
+      asteroids[i].y - asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r / 4,
-      asteroids[i].y - asteroids[i].r / 2
+      asteroids[i].x + asteroids[i].r * Math.random(),
+      asteroids[i].y - asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x ,
-      asteroids[i].y - asteroids[i].r / 1.5
+      asteroids[i].x + asteroids[i].r * Math.random() ,
+      asteroids[i].y - asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r / 2,
-      asteroids[i].y - asteroids[i].r / 2
+      asteroids[i].x - asteroids[i].r * Math.random(),
+      asteroids[i].y - asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r / 1.5,
-      asteroids[i].y - asteroids[i].r / 3
+      asteroids[i].x - asteroids[i].r * Math.random(),
+      asteroids[i].y - asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r,
-      asteroids[i].y + asteroids[i].r / 3
+      asteroids[i].x - asteroids[i].r * Math.random(),
+      asteroids[i].y + asteroids[i].r * Math.random()
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r / 2,
-      asteroids[i].y + asteroids[i].r / 2
+      asteroids[i].x - asteroids[i].r * Math.random(),
+      asteroids[i].y + asteroids[i].r * Math.random()
     );
     ctx.closePath();
     ctx.stroke();
