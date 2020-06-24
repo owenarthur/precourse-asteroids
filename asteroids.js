@@ -272,6 +272,7 @@ function fireLaser() {
     yv : -500 * Math.sin(ship.angle) / FPS,
     distance: 0,
   })
+  // create new instance of laser sound and play
   var pew = new Audio('assets/pew.m4a');
   pew.play();
 }
@@ -321,6 +322,9 @@ function buildAsteroids(x, y, count, size) {
       yv: Math.random() * 75 / FPS * (Math.random() < 0.5 ? 1 : -1),
       size: size,
       r : size / 2.5,
+      rTwo: size / 2.3,
+      rThree: size / 2.1,
+      rFour : size / 1.9,
       angle: Math.PI / 2,
       rotation : ASTEROID_TURN_SPEED / 180 * Math.PI / FPS,
       anglev: 1,
@@ -356,20 +360,44 @@ function drawAsteroids() {
   for (let i = 0; i < asteroids.length; i++) {
     ctx.beginPath();
     ctx.moveTo(
-      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle),
-      asteroids[i].y - asteroids[i].r * Math.sin(asteroids[i].angle)
+      asteroids[i].x,
+      asteroids[i].y + asteroids[i].r
     );
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r * Math.sin(asteroids[i].angle),
-      asteroids[i].y + asteroids[i].r * Math.cos(asteroids[i].angle)
+      asteroids[i].x + asteroids[i].r / 2,
+      asteroids[i].y + asteroids[i].r / 2
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r * Math.cos(asteroids[i].angle),
-      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle)
+      asteroids[i].x + asteroids[i].r,
+      asteroids[i].y + asteroids[i].r / 4
     );
     ctx.lineTo(
-      asteroids[i].x - asteroids[i].r * Math.sin(asteroids[i].angle),
-      asteroids[i].y - asteroids[i].r * Math.cos(asteroids[i].angle)
+      asteroids[i].x + asteroids[i].r / 2 ,
+      asteroids[i].y - asteroids[i].r / 4
+    );
+    ctx.lineTo(
+      asteroids[i].x + asteroids[i].r / 4,
+      asteroids[i].y - asteroids[i].r / 2
+    );
+    ctx.lineTo(
+      asteroids[i].x ,
+      asteroids[i].y - asteroids[i].r / 1.5
+    );
+    ctx.lineTo(
+      asteroids[i].x - asteroids[i].r / 2,
+      asteroids[i].y - asteroids[i].r / 2
+    );
+    ctx.lineTo(
+      asteroids[i].x - asteroids[i].r / 1.5,
+      asteroids[i].y - asteroids[i].r / 3
+    );
+    ctx.lineTo(
+      asteroids[i].x - asteroids[i].r,
+      asteroids[i].y + asteroids[i].r / 3
+    );
+    ctx.lineTo(
+      asteroids[i].x - asteroids[i].r / 2,
+      asteroids[i].y + asteroids[i].r / 2
     );
     ctx.closePath();
     ctx.stroke();
