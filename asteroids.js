@@ -272,7 +272,6 @@ function fireLaser() {
     yv : -500 * Math.sin(ship.angle) / FPS,
     distance: 0,
   })
-  // create new instance of laser sound and play
   var pew = new Audio('assets/pew.m4a');
   pew.play();
 }
@@ -331,9 +330,9 @@ function buildAsteroids(x, y, count, size) {
       yv: Math.random() * 75 / FPS * (Math.random() < 0.5 ? 1 : -1),
       size: size,
       r : size / 2.5,
+      angle: Math.PI / 2,
       rotation : ASTEROID_TURN_SPEED / 180 * Math.PI / FPS,
       anglev: 1,
-      randomScalars : [...Array(16)].map(() => Math.random())
     })
   }
 }
@@ -364,83 +363,23 @@ function drawAsteroids() {
   ctx.strokeStyle = asteroidColor;
   ctx.lineWidth = ship.size / 15;
   for (let i = 0; i < asteroids.length; i++) {
-    var x = asteroids[i].x;
-    var y = asteroids[i].y;
-    var r = asteroids[i].r;
-    var pi = Math.PI;
-    var scalars = asteroids[i].randomScalars;
-
     ctx.beginPath();
     ctx.moveTo(
-      x + r * Math.cos(0) - (r * scalars[0]),
-      y + r * Math.sin(0) - (r * scalars[0])
+      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle),
+      asteroids[i].y - asteroids[i].r * Math.sin(asteroids[i].angle)
     );
     ctx.lineTo(
-      x + r * Math.cos(pi / 6) - (r * scalars[1]),
-      y + r * Math.sin(pi / 6) - (r * scalars[1])
+      asteroids[i].x + asteroids[i].r * Math.sin(asteroids[i].angle),
+      asteroids[i].y + asteroids[i].r * Math.cos(asteroids[i].angle)
     );
     ctx.lineTo(
-      x + r * Math.cos(pi / 4) - (r * scalars[2]),
-      y + r * Math.sin(pi / 4) - (r * scalars[2])
+      asteroids[i].x - asteroids[i].r * Math.cos(asteroids[i].angle),
+      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle)
     );
     ctx.lineTo(
-      x + r * Math.cos(pi / 3) - (r * scalars[3]),
-      y + r * Math.sin(pi / 3) - (r * scalars[3])
+      asteroids[i].x - asteroids[i].r * Math.sin(asteroids[i].angle),
+      asteroids[i].y - asteroids[i].r * Math.cos(asteroids[i].angle)
     );
-
-
-    ctx.lineTo(
-      x + r * Math.cos(pi / 2) - (r * scalars[4]),
-      y + r * Math.sin(pi / 2) - (r * scalars[4])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((2 * pi) / 3) - (r * scalars[5]),
-      y + r * Math.sin((2 * pi) / 3) - (r * scalars[5])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((3 * pi) / 4) - (r * scalars[6]),
-      y + r * Math.sin((3 * pi) / 4) - (r * scalars[6])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((5 * pi) / 6) - (r * scalars[7]),
-      y + r * Math.sin((5 * pi) / 6) - (r * scalars[7])
-    );
-
-
-    ctx.lineTo(
-      x + r * Math.cos(pi) - (r * scalars[8]),
-      y + r * Math.sin(pi) - (r * scalars[8])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((7 * pi) / 6) - (r * scalars[9]),
-      y + r * Math.sin((7 * pi) / 6) - (r * scalars[9])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((5 * pi) / 4) - (r * scalars[10]),
-      y + r * Math.sin((5 * pi) / 4) - (r * scalars[10])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((4 * pi) / 3) - (r * scalars[11]),
-      y + r * Math.sin((4 * pi) / 3) - (r * scalars[11])
-    );
-
-    ctx.lineTo(
-      x + r * Math.cos((3 * pi) / 2) - (r * scalars[12]),
-      y + r * Math.sin((3 * pi) / 2) - (r * scalars[12])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((5 * pi) / 3) - (r * scalars[13]),
-      y + r * Math.sin((5 * pi) / 3) - (r * scalars[13])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((7 * pi) / 4) - (r * scalars[14]),
-      y + r * Math.sin((7 * pi) / 4) - (r * scalars[14])
-    );
-    ctx.lineTo(
-      x + r * Math.cos((11 * pi) / 6) - (r * scalars[15]),
-      y + r * Math.sin((11 * pi) / 6) - (r * scalars[15])
-    );
-
     ctx.closePath();
     ctx.stroke();
   }
