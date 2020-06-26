@@ -375,7 +375,7 @@ function drawAsteroids() {
       asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar),
       asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar)
     );
-    for (let j = 1; j <= 24; j++) {
+    for (let j = 1; j <= 23; j++) {
       ctx.lineTo(
         asteroids[i].x + asteroids[i].r * Math.cos((asteroids[i].angle + (j / 12)) * Math.PI) - (asteroids[i].randomScalars[j] * asteroids[i].scalar),
         asteroids[i].y + asteroids[i].r * Math.sin((asteroids[i].angle + (j / 12)) * Math.PI) - (asteroids[i].randomScalars[j] * asteroids[i].scalar)
@@ -386,7 +386,7 @@ function drawAsteroids() {
       asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar)
     );
 
-    // ctx.closePath();
+    ctx.closePath();
     ctx.stroke();
   }
 }
