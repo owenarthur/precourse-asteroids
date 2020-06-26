@@ -330,9 +330,11 @@ function buildAsteroids(x, y, count, size) {
       yv: Math.random() * 75 / FPS * (Math.random() < 0.5 ? 1 : -1),
       size: size,
       r : size / 2.5,
-      angle: Math.PI / 2,
-      rotation : ASTEROID_TURN_SPEED / 180 * Math.PI / FPS,
+      angle: 0,
+      rotation : ASTEROID_TURN_SPEED / Math.PI * 2 / FPS,
       anglev: 1,
+      randomScalars : [...Array(25)].map(() => Math.random()),
+      scalar : size / 2.5 / 6
     })
   }
 }
@@ -342,7 +344,7 @@ function moveAsteroids() {
   for (let i = 0; i < asteroids.length; i++) {
     asteroids[i].x += asteroids[i].xv;
     asteroids[i].y += asteroids[i].yv;
-    asteroids[i].angle += asteroids[i].rotation;
+    asteroids[i].angle += (1 / 720);
 
     if (asteroids[i].x > canvas.width) {
       asteroids[i].x -= canvas.width;
@@ -362,25 +364,29 @@ function moveAsteroids() {
 function drawAsteroids() {
   ctx.strokeStyle = asteroidColor;
   ctx.lineWidth = ship.size / 15;
+
   for (let i = 0; i < asteroids.length; i++) {
-    ctx.beginPath();
+
+
+    // ctx.beginPath();
+    // a dot to represent the origin for debugging purposes
+    // ctx.fillRect(asteroids[i].x, asteroids[i].y, 1, 1);
     ctx.moveTo(
-      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle),
-      asteroids[i].y - asteroids[i].r * Math.sin(asteroids[i].angle)
+      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar),
+      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar)
     );
+    for (let j = 1; j <= 24; j++) {
+      ctx.lineTo(
+        asteroids[i].x + asteroids[i].r * Math.cos((asteroids[i].angle + (j / 12)) * Math.PI) - (asteroids[i].randomScalars[j] * asteroids[i].scalar),
+        asteroids[i].y + asteroids[i].r * Math.sin((asteroids[i].angle + (j / 12)) * Math.PI) - (asteroids[i].randomScalars[j] * asteroids[i].scalar)
+      );
+    }
     ctx.lineTo(
-      asteroids[i].x + asteroids[i].r * Math.sin(asteroids[i].angle),
-      asteroids[i].y + asteroids[i].r * Math.cos(asteroids[i].angle)
+      asteroids[i].x + asteroids[i].r * Math.cos(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar),
+      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle * Math.PI) - (asteroids[i].randomScalars[0] * asteroids[i].scalar)
     );
-    ctx.lineTo(
-      asteroids[i].x - asteroids[i].r * Math.cos(asteroids[i].angle),
-      asteroids[i].y + asteroids[i].r * Math.sin(asteroids[i].angle)
-    );
-    ctx.lineTo(
-      asteroids[i].x - asteroids[i].r * Math.sin(asteroids[i].angle),
-      asteroids[i].y - asteroids[i].r * Math.cos(asteroids[i].angle)
-    );
-    ctx.closePath();
+
+    // ctx.closePath();
     ctx.stroke();
   }
 }
